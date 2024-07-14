@@ -1,0 +1,282 @@
+<html>
+<head>
+
+	<link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300,300italic,700' rel='stylesheet' type='text/css'>
+
+    <style>
+	body
+	{
+	background-color: #afaeac;
+	font-family: 'Open Sans Condensed', sans-serif;
+	}
+	.paperPlate
+	{
+	-webkit-box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.75);
+-moz-box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.75);
+box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.75);
+}
+.leftArrow
+{
+background-image: url('/html5-reader/images/left-arrow.png');
+width: 64px;
+height: 64px;
+position: absolute;
+top: 5%;
+left:2%; 
+cursor:pointer;
+}
+.rightArrow
+{
+background-image: url('/html5-reader/images/right-arrow.png');
+width: 64px;
+height: 64px;
+position: absolute;
+top: 5%;
+right: 2%; 
+cursor:pointer;
+}
+.frontText
+{
+ -webkit-touch-callout: none; 
+  -webkit-user-select: none;   
+  -khtml-user-select: none;    
+  -moz-user-select: none;    
+  -ms-user-select: none;      
+  user-select: none;   
+cursor: default;  
+  }
+	</style>
+	
+	 <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+	 
+     <script type="text/javascript">
+	 var currentPage = 1;
+	 var totalPages = 10;
+	 var ctx;
+	 var toolsMoved = false;
+	 var loadCompleted = false;
+	 
+	 function nextPage()
+	 {
+	 if (totalPages == currentPage)
+	 {
+	 return;
+	 }
+	 if (loadCompleted == false)
+	 {
+	 alert('Sivu latautuu, ‰l‰p‰s hoppuile!');
+	 return;
+	 }
+currentPage++;
+paperHolder.width  = 2000; 
+paperHolder.height = 2000;
+RenderText();
+
+	 }
+	 	 function prevPage()
+	 {
+	  if (currentPage == 1)
+	 {
+	 return;
+	 }
+currentPage--;
+paperHolder.width  = 2000; 
+paperHolder.height = 2000;
+RenderText();
+	 }
+	 
+	$(document).mousemove(function( event ) {
+	 if (toolsMoved) {
+        return;
+    }
+	toolsMoved = true;
+	 $( "#paperTools" ).fadeIn( "slow", function() {
+	 setTimeout(function() {
+ $('#paperTools').fadeOut("slow");
+	}, 2000 );
+	
+	 });
+	 toolsMoved = false;
+	 });
+		function drawCubicBezier(drawArea, _arg2, _arg3, _arg4, _arg5, _arg6, _arg7, _arg8, _arg9)
+	{
+			var _local18;
+			var _local19;
+			var _local21;
+			var _local22;
+			var _local10 = (Math.abs(((_arg8 - _arg2) * (_arg8 - _arg2))) + Math.abs(((_arg9 - _arg3) * (_arg9 - _arg3))));
+			var lineColor = Math.max(0.1, (1 - (_local10 / 2000)));
+			var _local12 = ((_arg8 + (3 * (_arg4 - _arg6))) - _arg2);
+			var _local13 = ((_arg9 + (3 * (_arg5 - _arg7))) - _arg3);
+			var _local14 = (3 * ((_arg2 - (2 * _arg4)) + _arg6));
+			var _local15 = (3 * ((_arg3 - (2 * _arg5)) + _arg7));
+			var _local16 = (3 * (_arg4 - _arg2));
+			var _local17 = (3 * (_arg5 - _arg3));
+			var _local20 = lineColor;
+			while (_local20 < 1) {
+				_local21 = (_local20 * _local20);
+				_local22 = (_local21 * _local20);
+				_local18 = ((((_local22 * _local12) + (_local21 * _local14)) + (_local20 * _local16)) + _arg2);
+				_local19 = ((((_local22 * _local13) + (_local21 * _local15)) + (_local20 * _local17)) + _arg3);
+				drawArea.lineTo(_local18, _local19);
+				_local20 = (_local20 + lineColor);
+			};
+			drawArea.lineTo(_arg8, _arg9);
+		}
+	
+ function drawVector(drawArea, vectorData, LocationX, LocationY, penColor)
+{
+			var _local8;
+			var _local9;
+			var _local10;
+			var _local12;
+			var _local13;
+			var _local14;
+			var _local15;
+			var _local16;
+			var _local17;
+			var _local18;
+			var _local19;
+			var currentLocation = 0;
+			var vectorLength = vectorData.length;
+			
+			
+			
+			var lineColor = "#000000";
+			while (currentLocation < vectorLength) {
+
+		
+				switch (vectorData.charAt(currentLocation)) {
+		
+					case "B":
+			
+						drawArea.beginPath();
+						//$('#debugConsole').val( $('#debugConsole').val() + " " + 'Aloitetaan v‰rj‰ys, k‰ytet‰‰n v‰rin‰: ' + lineColor + '.\n');
+						break;
+					case "F":
+						drawArea.closePath();
+						drawArea.fillStyle = lineColor;
+						drawArea.fill();
+						drawArea.stroke();
+						//$('#debugConsole').val( $('#debugConsole').val() + " " + 'P‰‰tet‰‰n v‰rj‰ys.\n');
+						break;
+					case "S":
+					    //lineColor = 0x0066ff;
+						lineColor = "#" + vectorData.substr((currentLocation + 1), 6);
+						
+						currentLocation = (currentLocation + 6);
+//$('#debugConsole').val( $('#debugConsole').val() + " " + 'Vaihdetaan kyn‰n v‰ri, uusi v‰ri on: ' + lineColor + '.\n');
+
+						break;
+					case "M":
+				//drawArea.graphics.moveTo(50, 50);
+						_local8 = parseInt(vectorData.substr((currentLocation + 1), 8), 16);
+						_local9 = (_local8 >> 16);
+						_local10 = (_local8 & 0xFFFF);
+							drawArea.moveTo((_local9 + LocationX), (_local10 + LocationY));
+									
+						currentLocation = (currentLocation + 8);
+						//$('#debugConsole').val( $('#debugConsole').val() + " " + 'Siirret‰‰n grafiikkaa pisteeseen: ' + _local9 + ' x ' + _local10 + '.\n');
+						break;
+					case "L":
+					//drawArea.graphics.lineTo(100, 100);
+						_local8 = parseInt(vectorData.substr((currentLocation + 1), 8), 16);
+						_local9 = (_local8 >> 16);
+						_local10 = (_local8 & 0xFFFF);
+				
+								drawArea.lineTo((_local9 + LocationX), (_local10 + LocationY));
+			
+						currentLocation = (currentLocation + 8);
+						//$('#debugConsole').val( $('#debugConsole').val() + " " + 'Piirret‰‰n viiva, koordinaatit: x: ' + _local9 + 'y: ' + _local10 + ' .\n');
+						break;
+					case "C":
+						_local8 = parseInt(vectorData.substr((currentLocation + 1), 8), 16);
+						_local12 = (_local8 >> 16);
+						_local13 = (_local8 & 0xFFFF);
+						_local8 = parseInt(vectorData.substr((currentLocation + 9), 8), 16);
+						_local14 = (_local8 >> 16);
+						_local15 = (_local8 & 0xFFFF);
+						_local8 = parseInt(vectorData.substr((currentLocation + 17), 8), 16);
+						_local16 = (_local8 >> 16);
+						_local17 = (_local8 & 0xFFFF);
+					//	$('#debugConsole').val( $('#debugConsole').val() + " " + 'Piirret‰‰n monikulmio.\n');
+						drawCubicBezier(drawArea, (_local9 + LocationX), (_local10 + LocationY), (_local12 + LocationX), (_local13 + LocationY), (_local14 + LocationX), (_local15 + LocationY), (_local16 + LocationX), (_local17 + LocationY));
+						_local9 = _local16;
+						_local10 = _local17;
+						currentLocation = (currentLocation + 24);
+						break;
+					case "G":
+					//$('#debugConsole').val( $('#debugConsole').val() + " " + 'Luodaan kaksinaisvektori.\n');
+						_local18 = ((vectorData.indexOf("!", (currentLocation + 1)) - currentLocation) - 1);
+						_local19 = vectorData.substr((currentLocation + 1), _local18).split("#");
+						currentLocation = (currentLocation + _local18);
+						
+						drawVector(drawArea, vectorData.substr(_local19[0], _local19[1]), parseInt(_local19[2]), parseInt(_local19[3]), lineColor);
+						break;
+				}
+				currentLocation++;
+			}
+		}
+		
+		  RenderText = function (){
+		  
+$("#loadingAnimation").show();
+  $('.pageNumber').html(currentPage);
+  loadCompleted = false;
+  
+  $.ajax({
+    url:'/papertest/' + currentPage + '.vec',
+    success: function (data){
+	
+		var vectorIndex = data.indexOf("!");
+			var paperDimensionArray = data.substr(0, vectorIndex).split("#");
+			var paperWidth = (paperDimensionArray[2] * 1.4); // Koko kerrotaan 16:sta
+			var paperHeight = (paperDimensionArray[3] * 1.38); // Koko kerrotaan 16:sta
+			
+	var c = document.getElementById("paperHolder");
+ctx = c.getContext("2d");
+paperHolder.width  = paperWidth; 
+paperHolder.height = paperHeight;
+ //alert('dev: ' + paperWidth + ' ja: ' + paperHeight);
+			  // $('#debugConsole').val( $('#debugConsole').val() + " " + 'Aloitetaan vektorimuodostus, pituus: ' + data.length + '\r');
+			  
+	  	   graphicLayer = new Image();
+  graphicLayer.src = '/papertest/' + currentPage + '.jpg';
+  graphicLayer.onload = function(){
+    ctx.scale(0.0799,0.099);
+    ctx.drawImage(graphicLayer, -20, -10, 18000, 20000);
+	 ctx.scale(1.095, 0.879);
+			   drawVector(ctx, data, 0, 0, 0);
+			   $("#loadingAnimation").hide();
+			   loadCompleted = true;
+  }
+  
+			// cropImageFromCanvas(ctx, paperHolder);
+      //parse your data here
+      //you can split into lines using data.split('\n') 
+      //an use regex functions to effectively parse it
+    }
+  });
+}
+// drawVector(s, 'aa', 0, 0, 0);
+     </script>
+</head>
+<body onload="RenderText()" style="z-index:1;"><canvas id="paperHolder" style="box-shadow: 0 10px 10px #000; background-color: white;" width="100" height="100"></canvas>
+<div style="z-index:2; display: none;" id="paperTools">
+
+<div class="leftArrow" onclick="prevPage();"></div>
+<div class="rightArrow" onclick="nextPage();"></div>
+
+
+<span style="position:absolute; top: 5%; left:48%; font-size: 13px;" class="frontText"><div class="pageNumber" style="display: inline-block;">1</div>/10</span>
+
+<span style="position:absolute; top:2%; left:45%; font-size: 15px; color: #686a69;" class="frontText">Pohjalainen - 17.6.2016</span>
+
+</div>
+
+<img src="/html5-reader/images/ajax-loader.gif" style="z-index:2; position:absolute; top:50%; left:45%; display: none;" id="loadingAnimation">
+
+
+<!-- <textarea name="debugConsole" id="debugConsole" rows="20" cols="100" style="position: absolute; top: 500px;"></textarea> -->
+</body>
+</html>
