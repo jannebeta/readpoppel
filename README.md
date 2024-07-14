@@ -1,7 +1,7 @@
 # LukuPoppeli (ReadPoppel)
-_ _Netflix for newspapers_ _
+_Netflix for newspapers_
 
-_ _This is my hobby project for private use. Mostly written in 2016 - 2018._ _
+_This is my hobby project for private use. Mostly written in 2016 - 2018._
 
 Written with PHP and JS. Using also Bootstrap. Intended to Visiolink e-Pages.dk papers. 
 Currently many newspapers won't anymore using that platform so uploaded ReadPoppel source to Github for historical purposes.
